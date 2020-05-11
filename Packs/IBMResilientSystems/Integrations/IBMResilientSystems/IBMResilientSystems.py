@@ -13,7 +13,6 @@ logging.basicConfig()
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-# resilient.co3.LOG.disable(logging.ERROR)
 
 if not demisto.params()['proxy']:
     del os.environ['HTTP_PROXY']
@@ -998,9 +997,7 @@ client = resilient.get_client({
     'org': ORG_NAME
 })
 
-# Disable SDK logging warning messages
-integration_logger = logging.getLogger('resilient')  # type: logging.Logger
-integration_logger.propagate = False
+resilient.co3.LOG.setLevel(logging.ERROR)
 
 LOG('command is %s' % (demisto.command(),))
 try:
