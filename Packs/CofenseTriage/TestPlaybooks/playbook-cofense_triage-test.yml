@@ -13,7 +13,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -199,7 +198,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -225,5 +223,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 4.1.0
-description: ''

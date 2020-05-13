@@ -88,7 +88,7 @@ tasks:
     form:
       questions:
       - id: '0'
-        label: ''''
+        label: ''
         labelarg:
           simple: Which out of the following options best represents your current
             health condition?

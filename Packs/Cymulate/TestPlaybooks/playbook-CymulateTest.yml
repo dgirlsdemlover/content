@@ -13,7 +13,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -39,7 +38,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -65,7 +63,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -91,7 +88,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -145,8 +141,8 @@ tasks:
       methods:
       - email
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -161,9 +157,9 @@ tasks:
       id: 23f90fa0-e382-4f74-87a6-a68adbb8aecc
       version: -1
       name: Any payloads penetrated?
-      description: "Gets a value and return it. This is to be used in playbook conditional\
-        \ tasks - get a value from incident field, label or context, and act accordingly.\
-        \ \nIf an array is returned. the first value will be the decision making value."
+      description: "Gets a value and return it. This is to be used in playbook conditional
+        tasks - get a value from incident field, label or context, and act accordingly.
+        \nIf an array is returned. the first value will be the decision making value."
       type: condition
       iscommand: false
       brand: ""
@@ -242,7 +238,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "13"
@@ -296,7 +291,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "5"
@@ -383,7 +377,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "10"
@@ -437,7 +430,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -469,5 +461,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 4.1.0
-description: ''
