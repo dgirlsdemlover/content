@@ -40,9 +40,8 @@ configuration:
   required: false
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Time Field
   name: timeField
   defaultvalue: first_found
@@ -55,9 +54,8 @@ configuration:
   required: false
 - display: Incident type
   name: incidentType
-  defaultvalue: ""
-  type: 13
   required: false
+  type: 13
 script:
   script: |-
     var server = params.server.replace(/[\/]+$/, '') + '/' + params.version + '/';
