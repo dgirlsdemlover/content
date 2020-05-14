@@ -930,7 +930,7 @@ def related_incidents(incident_id):
 def fetch_incidents():
     last_run = demisto.getLastRun() and demisto.getLastRun().get('time')
     if not last_run:
-        last_run = date_to_timestamp(FETCH_TIME)
+        last_run = date_to_timestamp(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
         args = {'date-created-after': FETCH_TIME}
     else:
         args = {'date-created-after': normalize_timestamp(last_run)}
