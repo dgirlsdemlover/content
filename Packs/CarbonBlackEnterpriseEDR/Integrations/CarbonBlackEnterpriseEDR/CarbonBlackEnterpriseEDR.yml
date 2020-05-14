@@ -890,6 +890,175 @@ script:
     description: Remove watchlist with watchlist_id.
     execution: false
     name: cb-eedr-watchlist-delete
+  - arguments:
+    - default: false
+      description: The watchlist ID to update.
+      isArray: false
+      name: watchlist_id
+      required: true
+      secret: false
+    - default: false
+      description: The watchlist name.
+      isArray: false
+      name: watchlist_name
+      required: false
+      secret: false
+    - default: false
+      description: Watchlist description.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Enable watchlist tags.
+      isArray: false
+      name: tags_enabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Enable watchlist alerts.
+      isArray: false
+      name: alerts_enabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Watchlist report ID.
+      isArray: false
+      name: report_ids
+      required: false
+      secret: false
+    - default: false
+      description: The classifier key to update.
+      isArray: false
+      name: classifier_key
+      required: false
+      secret: false
+    - default: false
+      description: The classifier value to update.
+      isArray: false
+      name: classifier_value
+      required: false
+      secret: false
+    deprecated: false
+    description: Update watchlist with watchlist_id. This will update the tags and
+      alert status as well as any reports or classifiers attached to the watchlist.
+    execution: false
+    name: cb-eedr-watchlist-update
+    outputs:
+    - contextPath: CarbonBlackEEDR.Watchlist.Classifier
+      description: The watchlist classifier
+      type: String
+    - contextPath: CarbonBlackEEDR.Watchlist.Last_update_timestamp
+      description: Watchlist last update timestamp.
+      type: Date
+    - contextPath: CarbonBlackEEDR.Watchlist.Name
+      description: Watchlist name.
+      type: String
+    - contextPath: CarbonBlackEEDR.Watchlist.Report_ids
+      description: Watchlist report id.
+      type: String
+    - contextPath: CarbonBlackEEDR.Watchlist.Create_timestamp
+      description: Watchlist create timestamp.
+      type: Date
+    - contextPath: CarbonBlackEEDR.Watchlist.Alerts_enabled
+      description: Is the alerts enabled in watchlist
+      type: Boolean
+    - contextPath: CarbonBlackEEDR.Watchlist.ID
+      description: Watchlist ID.
+      type: String
+    - contextPath: CarbonBlackEEDR.Watchlist.Tags_enabled
+      description: Is the tags enabled in watchlist
+      type: Boolean
+    - contextPath: CarbonBlackEEDR.Watchlist.Description
+      description: Watchlist description.
+      type: String
+  - arguments:
+    - default: false
+      description: The report ID.
+      isArray: false
+      name: report_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve report with report_id.
+    execution: false
+    name: cb-eedr-report-get
+    outputs:
+    - contextPath: CarbonBlackEEDR.Report.Visibility
+      description: Report visibility.
+      type: String
+    - contextPath: CarbonBlackEEDR.Report.Title
+      description: Report Title.
+      type: String
+    - contextPath: CarbonBlackEEDR.Report.Tags
+      description: Report Tags.
+      type: String
+    - contextPath: CarbonBlackEEDR.Report.Link
+      description: Report link.
+      type: String
+    - contextPath: CarbonBlackEEDR.Report.ID
+      description: Report ID.
+      type: String
+    - contextPath: CarbonBlackEEDR.Report.Timestamp
+      description: Report timestamp.
+      type: Date
+    - contextPath: CarbonBlackEEDR.Report.Description
+      description: Report description.
+      type: String
+    - contextPath: CarbonBlackEEDR.Report.Severity
+      description: Report severity.
+      type: Number
+    - contextPath: CarbonBlackEEDR.Report.IOCs
+      description: The report's IOCs
+      type: String
+  - arguments:
+    - default: false
+      description: Report ID.
+      isArray: false
+      name: report_id
+      required: true
+      secret: false
+    - default: false
+      description: IOC ID.
+      isArray: false
+      name: ioc_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Get current ignore status for IOC ioc_id in report report_id.
+    execution: false
+    name: cb-eedr-ioc-ignore-status
+  - arguments:
+    - default: false
+      description: Report ID.
+      isArray: false
+      name: report_id
+      required: true
+      secret: false
+    - default: false
+      description: IOC ID.
+      isArray: false
+      name: ioc_id
+      required: true
+      secret: false
+    deprecated: false
+    description: IOC ioc_id for report report_id will not match future events for
+      any watchlist.
+    execution: false
+    name: cb-eedr-ioc-ignore
+  - deprecated: false
+    description: IOC ioc_id for report report_id will match future events for all
+      watchlists.
+    execution: false
+    name: cb-eedr-ioc-reactivate
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true

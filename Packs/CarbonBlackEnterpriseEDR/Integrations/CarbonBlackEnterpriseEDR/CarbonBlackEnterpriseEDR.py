@@ -1,6 +1,5 @@
 from typing import Union, Dict, Optional, Any
 
-import dateparser
 import demistomock as demisto
 import requests
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
@@ -265,6 +264,45 @@ class Client(BaseClient):
         )
 
         return self._http_request('POST', suffix_url, json_data=body)
+
+    def update_watchlist_request(self, watchlist_id: str, watchlist_name: str, description: str, tags_enabled: bool,
+                                 alerts_enabled: bool, report_ids: Union[list, str], classifier: dict) -> Dict:
+
+        suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{CB_ORG_KEY}/watchlists/{watchlist_id}'
+        body = assign_params(
+            name=watchlist_name,
+            description=description,
+            tags_enabled=tags_enabled,
+            alerts_enabled=alerts_enabled,
+            report_ids=report_ids,
+            classifier=classifier
+        )
+
+        return self._http_request('PUT', suffix_url, json_data=body)
+
+    def get_ignore_ioc_status_request(self, report_id: str, ioc_id: str):
+
+        suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{CB_ORG_KEY}/reports/{report_id})/iocs/{ioc_id}/ignore'
+
+        return self._http_request('GET', suffix_url)
+
+    def ignore_ioc_request(self, report_id: str, ioc_id: str):
+
+        suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{CB_ORG_KEY}/reports/{report_id})/iocs/{ioc_id}/ignore'
+
+        return self._http_request('PUT', suffix_url)
+
+    def reactivate_ioc_request(self, report_id: str, ioc_id: str):
+
+        suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{CB_ORG_KEY}/reports/{report_id})/iocs/{ioc_id}/ignore'
+
+        return self._http_request('DELETE', suffix_url)
+
+    def get_report_request(self, report_id: str) -> Dict:
+
+        suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{CB_ORG_KEY}/reports/{report_id}'
+
+        return self._http_request('GET', suffix_url)
 
 
 def test_module(client):
@@ -608,6 +646,131 @@ def delete_watchlist_command(client: Client, args: dict) -> str:
 
     return f'The watchlist {watchlist_id} was deleted successfully.'
 
+
+def update_watchlist_command(client: Client, args: dict) -> CommandResults:
+    watchlist_id = args.get('watchlist_id')
+    watchlist_name = args.get('watchlist_name')
+    description = args.get('description')
+    tags_enabled = args.get('tags_enabled')
+    alerts_enabled = args.get('alerts_enabled')
+    report_ids = argToList(args.get('report_ids'))
+    classifier = {
+        'key': args.get('classifier_key'),
+        'value': args.get('classifier_value')
+    }
+
+    if classifier and report_ids:
+        raise Exception('Please specify report or classifier but not both.')
+
+    headers = ['Name', 'ID', 'Description', 'Create_timestamp', 'Tags_enabled', 'Alerts_enabled', 'Report_ids',
+               'Classifier']
+
+    result = client.update_watchlist_request(watchlist_id, watchlist_name, description, tags_enabled, alerts_enabled,
+                                             report_ids, classifier)
+    contents = {
+        'Name': result.get('name'),
+        'ID': result.get('id'),
+        'Description': result.get('description'),
+        'Tags_enabled': result.get('tags_enabled'),
+        'Alerts_enabled': result.get('alerts_enabled'),
+        'Create_timestamp': convert_unix_to_timestamp(result.get('create_timestamp')),
+        'Report_ids': result.get('report_ids'),
+        'Classifier': result.get('classifier')
+    }
+
+    readable_output = tableToMarkdown(f'The watchlist "{watchlist_id}" was updated successfully.', contents, headers,
+                                      removeNull=True)
+    results = CommandResults(
+        outputs_prefix='CarbonBlackEEDR.Watchlist',
+        outputs_key_field='id',
+        outputs=contents,
+        readable_output=readable_output,
+        raw_response=result
+    )
+    return results
+
+
+def get_report_command(client: Client, args: dict) -> CommandResults:
+
+    report_id = args.get('report_id')
+    result = client.get_report_request(report_id)
+    headers = ['ID', 'Title', 'Timestamp', 'Description', 'Severity', 'Link', 'IOCs_v2', 'Tags', 'Visibility']
+    ioc_contents = []
+    contents = {
+        'ID': result.get('id'),
+        'Timestamp': convert_unix_to_timestamp(result.get('timestamp')),
+        'Title': result.get('title'),
+        'Description': result.get('description'),
+        'Severity': result.get('severity'),
+        'Link': result.get('link'),
+        'Tags': result.get('tags'),
+        'Visibility': result.get('visibility')
+    }
+
+    context = {
+        'ID': result.get('id'),
+        'Timestamp': convert_unix_to_timestamp(result.get('timestamp')),
+        'Title': result.get('title'),
+        'Description': result.get('description'),
+        'Severity': result.get('severity'),
+        'Link': result.get('link'),
+        'Tags': result.get('tags'),
+        'IOCs': result.get('iocs_v2'),
+        'Visibility': result.get('visibility')
+    }
+
+    iocs = result.get('iocs_v2')
+    for ioc in iocs:
+        ioc_contents.append({
+            'ID': ioc.get('id'),
+            'Match_type': ioc.get('match_type'),
+            'Values': ioc.get('values'),
+            'Field': ioc.get('field'),
+            'Link': ioc.get('link')
+        })
+
+    readable_output = tableToMarkdown(f'Report "{report_id}" information', contents, headers, removeNull=True)
+    ioc_output = tableToMarkdown(f'The IOCs for the report', ioc_contents, removeNull=True)
+    results = CommandResults(
+        outputs_prefix='CarbonBlackEEDR.Report',
+        outputs_key_field='id',
+        outputs=context,
+        readable_output=readable_output + ioc_output,
+        raw_response=result
+    )
+    return results
+
+
+def get_ignore_ioc_status_command(client: Client, args: dict) -> str:
+    report_id = args.get('report_id')
+    ioc_id = args.get('ioc_id')
+
+    result = client.get_ignore_ioc_status_request(report_id, ioc_id)
+
+    if not result.get('ignored'):
+        return f'IOC {ioc_id} status is false'
+    else:
+        return f'IOC {ioc_id} status is true'
+
+
+def ignore_ioc_command(client: Client, args: dict) -> str:
+
+    report_id = args.get('report_id')
+    ioc_id = args.get('ioc_id')
+
+    client.ignore_ioc_request(report_id, ioc_id)
+
+    return f'The IOC {ioc_id} for report {report_id} will not match future events for any watchlist.'
+
+
+def reactivate_ioc_command(client: Client, args: dict) -> str:
+
+    report_id = args.get('report_id')
+    ioc_id = args.get('ioc_id')
+
+    client.reactivate_ioc_request(report_id, ioc_id)
+
+    return f'IOC {ioc_id} for report {report_id} will match future events for all watchlists.'
 # def fetch_incidents(client, last_run, first_fetch_time):
 #     """
 #     This function will execute each interval (default is 1 minute).
@@ -740,6 +903,21 @@ def main():
 
         elif demisto.command() == 'cb-eedr-watchlist-delete':
             return_results(delete_watchlist_command(client, demisto.args()))
+
+        elif demisto.command() == 'cb-eedr-watchlist-update':
+            return_results(update_watchlist_command(client, demisto.args()))
+
+        elif demisto.command() == 'cb-eedr-report-get':
+            return_results(get_report_command(client, demisto.args()))
+
+        elif demisto.command() == 'cb-eedr-ioc-ignore-status':
+            return_results(get_ignore_ioc_status_command(client, demisto.args()))
+
+        elif demisto.command() == 'cb-eedr-ioc-ignore':
+            return_results(ignore_ioc_command(client, demisto.args()))
+
+        elif demisto.command() == 'cb-eedr-ioc-reactivate':
+            return_results(reactivate_ioc_command(client, demisto.args()))
 
     # Log exceptions
     except Exception as e:
