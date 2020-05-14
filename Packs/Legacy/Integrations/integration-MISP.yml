@@ -666,8 +666,6 @@ script:
       description: Hash of the file to query. Supports MD5, SHA1 and SHA256. Notice         that
         you can pass comma-separated multiple values to efficiently retrieve multiple
         responses.
-      default: true
-      isArray: true
     outputs:
     - contextPath: File.MD5
       description: Bad hash found
@@ -694,8 +692,6 @@ script:
     - name: url
       required: true
       description: URL to be checked
-      default: true
-      isArray: true
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
@@ -718,8 +714,6 @@ script:
     - name: ip
       required: true
       description: IP address to check
-      default: true
-      isArray: true
     outputs:
     - contextPath: IP.Address
       description: Bad IP Address found
