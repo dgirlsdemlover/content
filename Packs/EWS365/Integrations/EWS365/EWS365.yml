@@ -3,10 +3,18 @@ commonfields:
   id: EWS365
   version: -1
 configuration:
-- display: Email address
-  name: credentials
+- display: Application (client) ID
+  name: client_id
   required: true
-  type: 9
+  type: 0
+- display: Application (client) Secret
+  name: client_secret
+  required: true
+  type: 4
+- display: Tenant ID
+  name: tenant_id
+  required: true
+  type: 4
 - display: Email address from which to fetch incidents
   name: default_target_mailbox
   required: true
@@ -61,6 +69,11 @@ configuration:
 - defaultvalue: 'false'
   display: Run as a separate process (protects against memory depletion)
   name: separate_process
+  required: false
+  type: 8
+- display: Use a self deployed Azure Application
+  hidden: false
+  name: self_deployed
   required: false
   type: 8
 description: Exchange Web Services and Office 365 (mail)
@@ -1096,7 +1109,7 @@ script:
     - contextPath: File.Extension
       description: The extension of the file.
       type: String
-  dockerimage: devdemisto/ews365:1.0.0.7941
+  dockerimage: demisto/py3ews:1.0.0.7971
   feed: false
   isfetch: true
   longRunning: false
